@@ -79,6 +79,22 @@ Avoid generic purple/blue AI gradients, neon fintech aesthetics, excessive glass
 
 Use an editorial serif selectively for brand or emotional moments and a highly readable sans-serif for financial data and controls. Financial numbers must have excellent readability and contrast. Never communicate status through color alone; provide text or another accessible cue. Accessibility and adequate touch targets are required.
 
+### Canonical Visual Reference
+
+The canonical Laya visual design reference is:
+
+`docs/design/laya-official-design-reference.png`
+
+For UI work, inspect this reference before implementation. Treat it as the
+visual source of truth for Laya's brand identity, typography direction,
+visual density, Filipino design language, and screen-level aesthetic.
+
+Use it as a design reference, not as a production application asset.
+Accessibility, responsive behavior, and established engineering constraints
+take precedence where literal reproduction would harm usability.
+
+Do not invent a replacement logo or unrelated visual identity.
+
 ## 9. Product behavior
 
 - Laya is a planning and decision-support application, not a lender.
