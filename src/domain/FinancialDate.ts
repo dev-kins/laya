@@ -11,6 +11,15 @@ export class FinancialDate {
   }
 
   static fromParts(year: number, month: number, day: number): FinancialDate {
+    const length = FinancialDate.daysInMonth(year, month);
+    if (!Number.isInteger(day) || day < 1 || day > length) {
+      throw new RangeError('Invalid day for the calendar month.');
+    }
+    return new FinancialDate(year, month, day);
+  }
+
+  /** Gregorian month length; validates the same supported calendar boundaries. */
+  static daysInMonth(year: number, month: number): number {
     if (!Number.isInteger(year) || year < 1 || year > 9999) {
       throw new RangeError('Year must be an integer from 1 to 9999.');
     }
@@ -19,10 +28,7 @@ export class FinancialDate {
     }
     const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0);
     const monthLengths = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-    if (!Number.isInteger(day) || day < 1 || day > monthLengths[month - 1]) {
-      throw new RangeError('Invalid day for the calendar month.');
-    }
-    return new FinancialDate(year, month, day);
+    return monthLengths[month - 1];
   }
 
   /** Accepts only canonical YYYY-MM-DD, with no whitespace or timestamp suffix. */

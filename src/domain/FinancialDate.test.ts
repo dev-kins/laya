@@ -1,6 +1,23 @@
 import { FinancialDate } from './FinancialDate';
 
 describe('FinancialDate', () => {
+  test.each([
+    [2026, 1, 31], [2026, 2, 28], [2028, 2, 29], [1900, 2, 28],
+    [2000, 2, 29], [2026, 4, 30], [2026, 12, 31], [2027, 1, 31],
+    [1, 1, 31], [9999, 12, 31],
+  ])('returns Gregorian month length for %s/%s', (year, month, expected) => {
+    expect(FinancialDate.daysInMonth(year, month)).toBe(expected);
+    expect(() => FinancialDate.fromParts(year, month, expected)).not.toThrow();
+    expect(() => FinancialDate.fromParts(year, month, expected + 1)).toThrow(RangeError);
+  });
+
+  test.each([
+    [0, 1], [10000, 1], [2026.5, 1], [NaN, 1], [Infinity, 1],
+    [2026, 0], [2026, 13], [2026, 1.5], [2026, NaN], [2026, Infinity],
+  ])('rejects invalid month-length arguments %s/%s', (year, month) => {
+    expect(() => FinancialDate.daysInMonth(year, month)).toThrow(RangeError);
+  });
+
   test('reads explicit calendar parts and serializes canonically', () => {
     const date = FinancialDate.parse('2026-09-24');
     expect([date.year, date.month, date.day]).toEqual([2026, 9, 24]);
