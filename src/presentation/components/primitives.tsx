@@ -8,9 +8,9 @@ export function LayaText({ variant = 'body', style, ...props }: TextProps & { va
   return <Text {...props} style={[styles.text, typography[variant], style]} />;
 }
 
-export function Screen({ children }: PropsWithChildren) {
+export function Screen({ children, bottomSafeArea = true }: PropsWithChildren<{ bottomSafeArea?: boolean }>) {
   return (
-    <SafeAreaView style={styles.screen} edges={['top', 'bottom', 'left', 'right']}>
+    <SafeAreaView style={styles.screen} edges={bottomSafeArea ? ['top', 'bottom', 'left', 'right'] : ['top', 'left', 'right']}>
       <ScrollView contentContainerStyle={styles.scroll}>
         <View style={styles.page}>{children}</View>
       </ScrollView>

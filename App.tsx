@@ -1,13 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { VisualShowcase } from './src/presentation/VisualShowcase';
+import { RootNavigator } from './src/presentation/navigation/RootNavigator';
 
 export default function App() {
   return (
     <SafeAreaProvider>
       <StatusBar style="dark" />
-      <VisualShowcase />
+      <RootNavigator />
     </SafeAreaProvider>
   );
 }

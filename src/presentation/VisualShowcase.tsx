@@ -11,10 +11,10 @@ const examples: readonly { name: string; detail: string; status: StatusTone }[] 
   { name: 'Tala', detail: 'Worth a closer look', status: 'danger' },
 ];
 
-export function VisualShowcase() {
+export function VisualShowcase({ bottomSafeArea = true }: { bottomSafeArea?: boolean }) {
   const [previewPressed, setPreviewPressed] = useState(false);
   return (
-    <Screen>
+    <Screen bottomSafeArea={bottomSafeArea}>
       <View style={styles.brandRow}>
         <LayaText variant="display" style={styles.brand}>Laya</LayaText>
         <LayaText variant="caption" style={styles.brandLine}>Your path out of debt.</LayaText>
