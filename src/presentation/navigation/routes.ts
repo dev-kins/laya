@@ -3,6 +3,7 @@ import type { NavigatorScreenParams } from '@react-navigation/native';
 export type AddStackParamList = {
   AddHub: undefined;
   AddDebt: undefined;
+  DebtOverview: undefined;
 };
 
 export type MainTabParamList = {

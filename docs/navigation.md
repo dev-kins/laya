@@ -12,9 +12,12 @@ behavior. React Navigation owns transient navigation state; it is not persisted.
 
 Home temporarily reuses `VisualShowcase` with clearly labeled synthetic data.
 Timeline, Plan and Profile remain route shells. Add contains a nested native
-stack for AddHub and AddDebt. Done returns to AddHub; back from an unsaved form
-discards it, while removal is blocked during saving. Screens call the focused
-Add Debt application operation; SQL remains in persistence. See [Add Debt](add-debt.md).
+stack for AddHub, AddDebt and DebtOverview. AddHub and the saved-debt state offer
+View my debts. Success pops to an existing overview (or replaces the saved form
+with one). Done returns to the previous screen; back from an unsaved form discards
+it, while removal is blocked during saving. The overview reads on focus and offers
+Add a debt. Screens call focused application operations; SQL remains in persistence.
+See [Add Debt](add-debt.md) and [Utang Overview](debt-overview.md).
 
 Headers are hidden. Screen content owns top and side safe-area insets; the
 non-overlay tab bar owns the bottom inset. Tab screens disable Screen's bottom

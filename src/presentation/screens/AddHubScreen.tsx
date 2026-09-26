@@ -1,7 +1,7 @@
 import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Pressable, StyleSheet, View } from 'react-native';
 
-import { LayaText, Screen } from '../components/primitives';
+import { Button, LayaText, Screen } from '../components/primitives';
 import type { AddStackParamList } from '../navigation/routes';
 import { colors, layout, radii, spacing } from '../theme/tokens';
 
@@ -21,6 +21,7 @@ export function AddHubScreen({ navigation }: NativeStackScreenProps<AddStackPara
       <LayaText style={styles.light}>Keep a clear record of what’s left to pay.</LayaText>
       <LayaText variant="bodyStrong" style={styles.light}>Add a debt →</LayaText>
     </Pressable>
+    <Button label="View my debts" variant="secondary" onPress={() => navigation.navigate('DebtOverview')} />
     {[['Kita / Income', 'Money you expect or have received.'], ['Essential expense / Pangunahing gastusin', 'The everyday needs you protect.']].map(([label, copy]) => (
       <Pressable key={label} disabled accessibilityRole="button" accessibilityLabel={`${label} — Coming next`}
         accessibilityState={{ disabled: true }} style={styles.unavailable}>

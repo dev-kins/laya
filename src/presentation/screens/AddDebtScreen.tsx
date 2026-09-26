@@ -68,7 +68,8 @@ export function AddDebtScreen({ navigation }: NativeStackScreenProps<AddStackPar
               <LayaText variant="display" accessibilityRole="header" accessibilityLiveRegion="polite" style={styles.light}>Utang saved</LayaText>
               <LayaText style={styles.light}>Your debt is recorded on this device. One clear step toward seeing the whole picture.</LayaText>
             </View>
-            <Button label="Done" onPress={() => navigation.goBack()} />
+            <Button label="View my debts" onPress={() => navigation.popTo('DebtOverview')} />
+            <Button label="Done" variant="secondary" onPress={() => navigation.goBack()} />
           </> : <>
             <Button label="Back to Add" variant="secondary" disabled={saving} onPress={() => navigation.goBack()} />
             <View style={styles.section}>

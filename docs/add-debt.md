@@ -1,9 +1,11 @@
 # Add Debt
 
-The Add tab contains a small native stack: AddHub → AddDebt. Only Utang is active;
+The Add tab contains a small native stack: AddHub → AddDebt, plus DebtOverview.
+Only Utang is active;
 Income and Essential Expense are disabled with “Coming next” labels. Home remains
-the synthetic showcase. Done after saving pops back to the hub with a fresh form
-on the next visit. Switching tabs retains the current form; Back discards an
+the synthetic showcase. Done after saving pops back to the previous screen with a
+fresh form on the next visit. View my debts opens/returns to the overview; see
+[Utang Overview](debt-overview.md). Switching tabs retains the current form; Back discards an
 unsaved form. Removal is blocked during saving so the owned operation can finish.
 
 Presentation owns text state and calls one application operation per form session.
@@ -83,9 +85,10 @@ Device checklist for DK: open Add → Debt → enter synthetic debt → Save →
 success → fully close app → relaunch → confirm normal initialization. Also review
 keyboard reachability, large text, TalkBack and canonical visual balance. No debug
 financial screen is included. Saved-debt reopen verification on native remains
-pending a native harness run or future read UI; Home cannot verify it visually.
+pending physical execution. Task #013's overview now enables visual verification
+after a full app restart; Home remains synthetic.
 Visual review here is against the source layout/tokens, not product-owner approval
 or a rendered physical-device comparison.
 
-Not implemented: other entry types, debt read/edit/delete UI, real Home data,
+Not implemented: other entry types, debt edit/delete UI, real Home data,
 Timeline, projections, financial strategies, sync, integrations or notifications.
