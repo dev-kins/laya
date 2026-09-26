@@ -30,12 +30,12 @@ test.each(['Timeline', 'Plan', 'Profile', 'Add'])('%s tab opens its route and re
   const user = userEvent.setup();
   await render(<App />);
   await user.press(screen.getByRole('tab', { name }));
-  expect(screen.getByRole('header', { name })).toBeOnTheScreen();
+  expect(screen.getByRole('header', { name: name === 'Add' ? 'Idagdag sa Laya' : name })).toBeOnTheScreen();
   expect(screen.getByRole('tab', { name, selected: true })).toBeOnTheScreen();
   expect(screen.getByRole('tab', { name: 'Home', selected: false })).toBeOnTheScreen();
   expect(screen.queryByText('Magandang araw')).not.toBeVisible();
   if (name === 'Add') {
-    expect(screen.getByText('You will be able to add financial items here in a future version.')).toBeOnTheScreen();
+    expect(screen.getByRole('button', { name: 'Utang — Add a debt' })).toBeEnabled();
   }
   await user.press(screen.getByRole('tab', { name: 'Home' }));
   expect(screen.getByText('Magandang araw')).toBeVisible();

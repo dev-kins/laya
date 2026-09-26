@@ -11,8 +11,10 @@ returns from another tab to Home, then follows the platform's normal app-exit
 behavior. React Navigation owns transient navigation state; it is not persisted.
 
 Home temporarily reuses `VisualShowcase` with clearly labeled synthetic data.
-The other destinations are route shells, including Add, which has no form or
-modal workflow. No route imports domain calculations or persistence APIs.
+Timeline, Plan and Profile remain route shells. Add contains a nested native
+stack for AddHub and AddDebt. Done returns to AddHub; back from an unsaved form
+discards it, while removal is blocked during saving. Screens call the focused
+Add Debt application operation; SQL remains in persistence. See [Add Debt](add-debt.md).
 
 Headers are hidden. Screen content owns top and side safe-area insets; the
 non-overlay tab bar owns the bottom inset. Tab screens disable Screen's bottom

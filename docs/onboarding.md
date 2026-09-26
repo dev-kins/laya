@@ -18,8 +18,9 @@ Only a successful service operation switches the root stack to Main Tabs; failur
 keeps onboarding visible with retry. Back cannot revisit a removed onboarding
 route. No navigation state is persisted and no global-state library is used.
 
-At this stage there are only two bounded database operations: launch check and
-completion. Each service operation owns and closes its connection, even if its
+Onboarding has two bounded database operations: launch check and completion.
+Add Debt now follows the same bounded pattern (see `docs/add-debt.md`).
+Each service operation owns and closes its connection, even if its
 caller unmounts. This deliberately avoids retaining an unused connection while
 Home remains synthetic. Close failures propagate; operation plus close failures
 are preserved together. Later financial repositories can adopt a shared app

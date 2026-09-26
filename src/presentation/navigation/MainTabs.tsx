@@ -4,9 +4,10 @@ import type { ComponentProps } from 'react';
 import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { AddScreen, HomeScreen, PlanScreen, ProfileScreen, TimelineScreen } from '../screens/RouteScreens';
+import { HomeScreen, PlanScreen, ProfileScreen, TimelineScreen } from '../screens/RouteScreens';
 import { colors, layout, spacing, typography } from '../theme/tokens';
 import type { MainTabParamList } from './routes';
+import { AddNavigator } from './AddNavigator';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 type IconName = ComponentProps<typeof Ionicons>['name'];
@@ -48,7 +49,7 @@ export function MainTabs() {
     >
       <Tab.Screen name="Home" component={HomeScreen} />
       <Tab.Screen name="Timeline" component={TimelineScreen} />
-      <Tab.Screen name="Add" component={AddScreen} />
+      <Tab.Screen name="Add" component={AddNavigator} />
       <Tab.Screen name="Plan" component={PlanScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
     </Tab.Navigator>

@@ -21,10 +21,6 @@ export function TimelineScreen() {
   return <Placeholder title="Timeline" description="Your financial timeline will take shape here." />;
 }
 
-export function AddScreen() {
-  return <Placeholder title="Add" description="You will be able to add financial items here in a future version." />;
-}
-
 export function PlanScreen() {
   return <Placeholder title="Plan" description="Your path forward will take shape here." />;
 }

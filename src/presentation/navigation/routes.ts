@@ -1,5 +1,10 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
 
+export type AddStackParamList = {
+  AddHub: undefined;
+  AddDebt: undefined;
+};
+
 export type MainTabParamList = {
   Home: undefined;
   Timeline: undefined;
