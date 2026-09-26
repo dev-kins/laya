@@ -1,5 +1,6 @@
 import { DefaultTheme, NavigationContainer, type Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import type { ReactNode } from 'react';
 
 import { colors } from '../theme/tokens';
 import { MainTabs } from './MainTabs';
@@ -19,11 +20,15 @@ const theme: Theme = {
   },
 };
 
-export function RootNavigator() {
+export function RootNavigator({ onboarding }: { onboarding?: ReactNode }) {
   return (
     <NavigationContainer theme={theme}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="MainTabs" component={MainTabs} />
+        {onboarding ? (
+          <Stack.Screen name="Onboarding">{() => onboarding}</Stack.Screen>
+        ) : (
+          <Stack.Screen name="MainTabs" component={MainTabs} />
+        )}
       </Stack.Navigator>
     </NavigationContainer>
   );

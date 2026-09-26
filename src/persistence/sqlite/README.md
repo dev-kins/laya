@@ -1,11 +1,13 @@
-# SQLite foundation (infrastructure only)
+# SQLite foundation
 
 `openLayaDatabase()` asynchronously opens `laya.db` on an owned connection,
 enables and verifies `foreign_keys`, requests WAL, and finishes migrations before
-returning. Future repositories receive this connection. Open once per application
-lifecycle; explicit closing is primarily for tests/development or shutdown.
+returning. Repositories receive this connection from their application owner,
+which must close it after the operations it owns have finished.
 Startup failures propagate and release the connection, never delete/reset data.
-The module is not wired into `App.tsx` or `index.ts` in this task.
+Application startup now uses this module through the onboarding service. The
+launch check and completion are bounded operations with owned connections; see
+`docs/onboarding.md` for lifecycle and persisted semantics.
 
 Migrations are contiguous from version 1, tracked by `PRAGMA user_version`.
 Each migration and version write commits atomically under `BEGIN EXCLUSIVE`.
@@ -21,6 +23,9 @@ explicit currency, and canonical financial-date text. It is a synthetic persiste
 fixture, not a product entity. Numeric type/range and PHP currency have SQL CHECK
 constraints; complete date validation occurs through FinancialDate. Future product
 schema design must deliberately retire this fixture via a new migration.
+
+Version 2 adds only `app_preferences` for local onboarding completion. The
+preference repository treats only exact text `"1"` as complete.
 
 ## Integer boundary
 

@@ -26,11 +26,12 @@ function connection(version = 0) {
 describe('migration selection and failure control flow (unit doubles)', () => {
   test('selects only pending migrations', () => {
     expect(pendingMigrations(0, migrations)).toEqual(migrations);
-    expect(pendingMigrations(1, migrations)).toEqual([]);
+    expect(pendingMigrations(1, migrations)).toEqual(migrations.slice(1));
+    expect(pendingMigrations(migrations.length, migrations)).toEqual([]);
     expect(pendingMigrations(0, [])).toEqual([]);
   });
 
-  test.each([-1, 0.5, NaN, Infinity, 2])('rejects invalid or newer version %s', (version) => {
+  test.each([-1, 0.5, NaN, Infinity, migrations.length + 1])('rejects invalid or newer version %s', (version) => {
     expect(() => pendingMigrations(version, migrations)).toThrow();
   });
 
@@ -101,7 +102,7 @@ describe('migration selection and failure control flow (unit doubles)', () => {
 
 describe('initialization (unit doubles)', () => {
   test('configures connection before migrations', async () => {
-    const { db, execAsync, getFirstAsync } = connection(1);
+    const { db, execAsync, getFirstAsync } = connection(migrations.length);
     await initializeDatabase(db);
     expect(execAsync.mock.calls[0]).toEqual(['PRAGMA foreign_keys = ON']);
     expect(getFirstAsync.mock.calls.map(([sql]) => sql)).toEqual([
@@ -117,7 +118,7 @@ describe('initialization (unit doubles)', () => {
   });
 
   test('accepts memory journal when WAL is unavailable for an in-memory database', async () => {
-    const { db, getFirstAsync } = connection(1);
+    const { db, getFirstAsync } = connection(migrations.length);
     getFirstAsync.mockResolvedValueOnce({ foreign_keys: 1 }).mockResolvedValueOnce({ journal_mode: 'memory' });
     await expect(initializeDatabase(db)).resolves.toBeUndefined();
   });

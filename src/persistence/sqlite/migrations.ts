@@ -21,6 +21,15 @@ export const migrations: readonly Migration[] = Object.freeze([
       )`);
     },
   }),
+  Object.freeze({
+    version: 2,
+    async up(db: SQLiteConnection): Promise<void> {
+      await db.execAsync(`CREATE TABLE app_preferences (
+        key TEXT PRIMARY KEY NOT NULL,
+        value TEXT NOT NULL
+      )`);
+    },
+  }),
 ]);
 
 export function pendingMigrations(currentVersion: number, available: readonly Migration[]): readonly Migration[] {

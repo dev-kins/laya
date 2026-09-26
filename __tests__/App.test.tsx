@@ -1,8 +1,14 @@
 import { render, screen, userEvent } from '@testing-library/react-native';
 
 import App from '../App';
+import { onboardingService } from '../src/application/onboarding';
 
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
+jest.mock('../src/application/onboarding', () => ({ onboardingService: { isComplete: jest.fn(), complete: jest.fn() } }));
+
+beforeEach(() => {
+  jest.mocked(onboardingService.isComplete).mockResolvedValue(true);
+});
 
 test('renders a clearly labeled synthetic visual showcase', async () => {
   await render(<App />);

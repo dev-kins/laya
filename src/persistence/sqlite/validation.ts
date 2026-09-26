@@ -52,29 +52,30 @@ export async function validateSQLite(open: () => Promise<SQLiteConnection>) {
     }
     check(await readProbe(db, 'missing') === null, 'Missing row must return null.');
 
-    const failed: Migration = { version: 2, async up(connection) {
+    const nextVersion = migrations.length + 1;
+    const failed: Migration = { version: nextVersion, async up(connection) {
       await connection.execAsync('CREATE TABLE rollback_probe (id INTEGER)');
       await connection.execAsync("UPDATE infrastructure_probe SET minor_units = 1 WHERE id = 'probe-0'");
       await connection.execAsync('INSERT INTO nonexistent_failure_probe VALUES (1)');
     } };
     await mustReject(() => runMigrations(db, [...migrations, failed]));
     const version = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-    check(version?.user_version === 1, 'Failed migration advanced schema version.');
+    check(version?.user_version === migrations.length, 'Failed migration advanced schema version.');
     check(await db.getFirstAsync("SELECT name FROM sqlite_master WHERE name = 'rollback_probe'") === null,
       'Failed migration left partial schema.');
     check((await readProbe(db, 'probe-0'))?.money.minorUnits === 176425, 'Failed migration changed prior data.');
     await closeOwnedConnection();
     db = await open();
     ownsConnection = true;
-    const retry: Migration = { version: 2, async up(connection) {
+    const retry: Migration = { version: nextVersion, async up(connection) {
       await connection.execAsync('CREATE TABLE rollback_probe (id INTEGER)');
     } };
     await runMigrations(db, [...migrations, retry]);
     await runMigrations(db, [...migrations, retry]); // Must not run CREATE TABLE twice.
     const retried = await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version');
-    check(retried?.user_version === 2, 'Reopened database could not retry migration.');
+    check(retried?.user_version === nextVersion, 'Reopened database could not retry migration.');
     await mustReject(() => runMigrations(db));
-    check((await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version'))?.user_version === 2,
+    check((await db.getFirstAsync<{ user_version: number }>('PRAGMA user_version'))?.user_version === nextVersion,
       'Newer schema rejection changed version.');
 
     await mustReject(() => db.execAsync(`INSERT INTO infrastructure_probe VALUES
