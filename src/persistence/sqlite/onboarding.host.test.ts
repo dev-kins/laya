@@ -24,9 +24,9 @@ function open(): SQLiteConnection {
 beforeEach(() => { directory = mkdtempSync(join(tmpdir(), 'laya-onboarding-')); db = open(); });
 afterEach(async () => { await db.closeAsync(); rmSync(directory, { recursive: true, force: true }); });
 
-test('fresh initialization has version 2 and missing completion is false', async () => {
+test('fresh initialization has version 3 and missing completion is false', async () => {
   await initializeDatabase(db);
-  expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 2 });
+  expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 3 });
   await expect(createOnboardingRepository(db).isComplete()).resolves.toBe(false);
 });
 
@@ -56,7 +56,7 @@ test('migration from version 1 preserves existing synthetic data, including afte
   await db.closeAsync();
   db = open();
   await initializeDatabase(db);
-  expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 2 });
+  expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 3 });
   expect(await db.getFirstAsync('SELECT * FROM infrastructure_probe')).toEqual({ id: 'existing', minor_units: 12345, currency: 'PHP', financial_date: '2026-09-30' });
   await expect(createOnboardingRepository(db).isComplete()).resolves.toBe(false);
 });

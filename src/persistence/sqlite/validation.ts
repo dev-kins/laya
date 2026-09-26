@@ -1,6 +1,12 @@
+import { Debt } from '../../domain/Debt';
+import { DebtPayment } from '../../domain/DebtPayment';
 import { FinancialDate } from '../../domain/FinancialDate';
+import { debtId, paymentId } from '../../domain/identifiers';
 import { Money } from '../../domain/Money';
-import type { SQLiteConnection } from './connection';
+import { Recurrence } from '../../domain/Recurrence';
+import type { FinancialConnection } from './connection';
+import { createDebtPaymentRepository } from './debtPaymentRepository';
+import { createDebtRepository } from './debtRepository';
 import { migrations, runMigrations, type Migration } from './migrations';
 import { readProbe, writeProbe } from './probe';
 
@@ -18,7 +24,7 @@ async function mustReject(action: () => Promise<unknown>): Promise<void> {
  * Caller owns a fresh disposable database and its cleanup. This deliberately
  * injects corrupt synthetic rows; NEVER pass the normal application database.
  */
-export async function validateSQLite(open: () => Promise<SQLiteConnection>) {
+export async function validateSQLite(open: () => Promise<FinancialConnection>) {
   let db = await open();
   let ownsConnection = true;
   const closeOwnedConnection = async (): Promise<void> => {
@@ -36,6 +42,13 @@ export async function validateSQLite(open: () => Promise<SQLiteConnection>) {
       CREATE TEMP TABLE validation_child (parent_id INTEGER REFERENCES validation_parent(id))`);
     await mustReject(() => db.execAsync('INSERT INTO validation_child VALUES (1)'));
     const date = FinancialDate.parse('2026-09-30');
+    const debt = Debt.create({ id: debtId('synthetic-debt'), name: 'Synthetic debt',
+      balance: Money.fromMinorUnits(0, 'PHP'), recurrence: Recurrence.twiceMonthly(30, 31),
+      interest: { kind: 'known', basisPoints: 0, period: 'annual' } });
+    const payment = DebtPayment.create({ id: paymentId('synthetic-payment'), debtId: debt.id,
+      amount: Money.fromMinorUnits(176425, 'PHP'), date });
+    await createDebtRepository(db).save(debt);
+    await createDebtPaymentRepository(db).save(payment);
     const amounts = [176425, -176425, 0, Number.MAX_SAFE_INTEGER, Number.MIN_SAFE_INTEGER];
     for (const [index, amount] of amounts.entries()) {
       await writeProbe(db, `probe-${index}`, Money.fromMinorUnits(amount, 'PHP'), date);
@@ -51,6 +64,15 @@ export async function validateSQLite(open: () => Promise<SQLiteConnection>) {
       check(value.date.equals(date), 'Date round trip failed.');
     }
     check(await readProbe(db, 'missing') === null, 'Missing row must return null.');
+    const storedDebt = await createDebtRepository(db).getById(debt.id);
+    const storedPayment = await createDebtPaymentRepository(db).getById(payment.id);
+    check(storedDebt?.balance.equals(debt.balance) === true && storedDebt.interest.kind === 'known'
+      && storedDebt.interest.basisPoints === 0 && storedDebt.interest.period === 'annual'
+      && storedDebt.recurrence?.requestedDays.join(',') === '30,31', 'Financial debt round trip failed.');
+    check(storedPayment?.amount.equals(payment.amount) === true && storedPayment.date.equals(date)
+      && storedPayment.debtId === debt.id, 'Financial payment round trip failed.');
+    check((await createDebtRepository(db).list()).length === 1, 'Financial list failed.');
+    await mustReject(() => db.runAsync('DELETE FROM debts WHERE id = ?', debt.id));
 
     const nextVersion = migrations.length + 1;
     const failed: Migration = { version: nextVersion, async up(connection) {
@@ -111,7 +133,7 @@ export async function validateSQLite(open: () => Promise<SQLiteConnection>) {
       rawInteger = 'driver-rejected';
     }
     check(rawInteger !== 'unexpected', 'Unexpected native integer representation; review adapter.');
-    return { roundTrips: amounts.length, rollbackAndRetry: true, rawInteger };
+    return { roundTrips: amounts.length, financialRoundTrips: 2, rollbackAndRetry: true, rawInteger };
   } finally {
     await closeOwnedConnection();
   }

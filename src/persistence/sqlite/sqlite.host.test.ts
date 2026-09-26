@@ -5,21 +5,24 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
-import type { SQLiteConnection, SqlValue } from './connection';
+import type { FinancialConnection, SqlValue } from './connection';
 import { initializeDatabase } from './initialize';
 import { validateSQLite } from './validation';
 
 test('host SQLite: migrations, rollback/retry, persistence, corruption, and integer boundaries', async () => {
   const directory = mkdtempSync(join(tmpdir(), 'laya-sqlite-validation-'));
   const filename = join(directory, 'probe.db');
-  const open = async (): Promise<SQLiteConnection> => {
+  const open = async (): Promise<FinancialConnection> => {
     const native = new DatabaseSync(filename);
-    const db: SQLiteConnection = {
+    const db: FinancialConnection = {
       async execAsync(sql) { native.exec(sql); },
       async getFirstAsync<T>(sql: string, ...params: SqlValue[]): Promise<T | null> {
         return (native.prepare(sql).get(...params) as T | undefined) ?? null;
       },
       async runAsync(sql, ...params) { return native.prepare(sql).run(...params); },
+      async getAllAsync<T>(sql: string, ...params: SqlValue[]): Promise<T[]> {
+        return native.prepare(sql).all(...params) as T[];
+      },
       async closeAsync() { native.close(); },
     };
     try { await initializeDatabase(db); } catch (error) { native.close(); throw error; }
@@ -27,7 +30,7 @@ test('host SQLite: migrations, rollback/retry, persistence, corruption, and inte
   };
   try {
     await expect(validateSQLite(open)).resolves.toEqual({
-      roundTrips: 5, rollbackAndRetry: true, rawInteger: 'driver-rejected',
+      roundTrips: 5, financialRoundTrips: 2, rollbackAndRetry: true, rawInteger: 'driver-rejected',
     });
   } finally {
     // Only this test's newly allocated temporary directory, never application data.

@@ -7,3 +7,7 @@ export interface SQLiteConnection {
   runAsync(sql: string, ...params: SqlValue[]): Promise<unknown>;
   closeAsync(): Promise<void>;
 }
+
+export interface FinancialConnection extends SQLiteConnection {
+  getAllAsync<T>(sql: string, ...params: SqlValue[]): Promise<T[]>;
+}
