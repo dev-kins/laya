@@ -17,6 +17,13 @@ export function formatPHP(money: Money): string {
   return `${negative ? '-' : ''}₱${grouped}.${fraction}`;
 }
 
+/** Exact editable decimal text, with no grouping/currency symbol or rounding. */
+export function formatMoneyInput(money: Money): string {
+  const { minorUnits } = Money.fromMinorUnits(money.minorUnits, money.currency);
+  const { whole, fraction } = hundredths(minorUnits < 0 ? -minorUnits : minorUnits);
+  return `${minorUnits < 0 ? '-' : ''}${whole}.${fraction}`;
+}
+
 export function formatInterest(interest: Interest): string {
   if (interest.kind === 'unknown') return 'Interest rate not entered';
   if (!Number.isSafeInteger(interest.basisPoints) || interest.basisPoints < 0) throw new RangeError('Invalid interest rate.');

@@ -40,6 +40,11 @@ export function AddHubScreen({ navigation }: NativeStackScreenProps<AddStackPara
       <LayaText variant="bodyStrong" style={styles.brand}>Add expense →</LayaText>
     </Pressable>
     <Button label="View my expenses" variant="secondary" onPress={() => navigation.navigate('ExpenseOverview')} />
+    <View style={styles.income}>
+      <LayaText variant="editorial" style={styles.brand}>Available money</LayaText>
+      <LayaText style={styles.support}>Money you currently have available for your plan.</LayaText>
+      <Button label="Set available money" variant="secondary" onPress={() => navigation.navigate('AvailableMoney')} />
+    </View>
     <LayaText variant="caption" style={styles.support}>Saved on this device. No bank connection needed.</LayaText>
   </Screen>;
 }

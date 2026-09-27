@@ -1,5 +1,12 @@
 # Core financial vocabulary
 
+`AvailableMoney.create({ amount })` is an immutable, manually reported aggregate
+of money available for the user's plan. It owns a revalidated nonnegative PHP
+Money value; zero is valid and absence is separate. It has no ID, date, accounts,
+history, or automatic relationship to the dated entities below. Future projection
+work must explicitly resolve its effective date and freshness. See
+[Available money](available-money.md).
+
 Entities use supplied opaque IDs, immutable PHP Money, and FinancialDate. Typed
 ID factories (`debtId`, `incomeId`, `obligationId`, `paymentId`) return branded
 strings: case-sensitive, 1-128 UTF-16 code units, no surrounding whitespace.

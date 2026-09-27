@@ -7,6 +7,7 @@ import { AddIncomeScreen } from '../screens/AddIncomeScreen';
 import { IncomeOverviewScreen } from '../screens/IncomeOverviewScreen';
 import { AddExpenseScreen } from '../screens/AddExpenseScreen';
 import { ExpenseOverviewScreen } from '../screens/ExpenseOverviewScreen';
+import { AvailableMoneyScreen } from '../screens/AvailableMoneyScreen';
 import type { AddStackParamList } from './routes';
 
 const Stack = createNativeStackNavigator<AddStackParamList>();
@@ -19,5 +20,6 @@ export function AddNavigator() {
     <Stack.Screen name="IncomeOverview" component={IncomeOverviewScreen} />
     <Stack.Screen name="AddExpense" component={AddExpenseScreen} />
     <Stack.Screen name="ExpenseOverview" component={ExpenseOverviewScreen} />
+    <Stack.Screen name="AvailableMoney" component={AvailableMoneyScreen} />
   </Stack.Navigator>;
 }

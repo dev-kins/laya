@@ -8,6 +8,7 @@ export type AddStackParamList = {
   IncomeOverview: undefined;
   AddExpense: undefined;
   ExpenseOverview: undefined;
+  AvailableMoney: undefined;
 };
 
 export type MainTabParamList = {

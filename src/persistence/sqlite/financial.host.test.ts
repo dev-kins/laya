@@ -62,7 +62,7 @@ const payment = (id = 'P', amount = 50, parent = 'D') => DebtPayment.create({
 });
 
 test('fresh schema is version 3 with exactly the existing and four financial tables', async () => {
-  await initializeDatabase(db);
+  await initializeDatabase(db, migrations.slice(0, 3));
   expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 3 });
   expect(await db.getFirstAsync('PRAGMA foreign_keys')).toEqual({ foreign_keys: 1 });
   expect(await db.getAllAsync("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name")).toEqual([
@@ -89,7 +89,7 @@ test.each([false, true])('upgrade v2 preserves data; injected version-write fail
   }
   await reopen();
   await runMigrations(db); // Retry/idempotence does not recreate tables.
-  expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: 3 });
+  expect(await db.getFirstAsync('PRAGMA user_version')).toEqual({ user_version: migrations.length });
   expect(await db.getFirstAsync('PRAGMA foreign_keys')).toEqual({ foreign_keys: 1 });
   await expect(createOnboardingRepository(db).isComplete()).resolves.toBe(true);
   expect(await db.getFirstAsync('SELECT value FROM app_preferences WHERE key = ?', 'synthetic-preference'))

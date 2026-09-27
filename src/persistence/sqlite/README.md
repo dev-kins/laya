@@ -80,7 +80,23 @@ columns, an invalid value returns a text sentinel rather than NULL, preserving
 the distinction between absent and corrupt. Payment reads also reject orphaned
 references from databases externally modified with FK enforcement disabled.
 No mapper coerces corrupt values, skips rows, reads the clock or logs row contents.
-Repositories are not yet wired into application/UI flows.
+Debt, income, and essential-obligation repositories now serve their respective
+application/UI flows through bounded owned connections.
+
+## Available money (schema version 4)
+
+Migration 4 appends `available_money`, preserving versions 1–3. Its INTEGER primary
+key is constrained to 1, enforcing zero or one current snapshot. No default row
+is created. Nonnegative INTEGER centavos are constrained to the safe-integer
+range with explicit PHP currency. A bound UPSERT replaces the same row.
+
+`createAvailableMoneyRepository` exposes `get()` / `save(snapshot)` on an injected
+connection. SQL guards both amount and singleton key before numeric conversion;
+unfiltered reads also reject extra rows, invalid currency, and corrupted values.
+Missing returns null, distinct from saved zero. Application read/save operations
+close their own connections before returning success and preserve combined
+operation/close errors. See `docs/available-money.md` for semantics, tests, and the
+pending physical Android checklist.
 
 ## Integer boundary
 

@@ -23,6 +23,12 @@ see [Kita / Income](income.md). AddExpense and ExpenseOverview now follow the sa
 pattern for [Essential Expenses](essential-expenses.md), reachable from the hub
 and the saved-expense state through View my expenses.
 
+AvailableMoney is another route in the Add stack, reached through Set available
+money. Its editor loads once per mounted visit, supports Retry after a read
+failure, and preserves drafts across tab switches. Saving replaces the singleton;
+Done returns to AddHub. The hub shows no cached amount. See
+[Available money](available-money.md). Home and Timeline behavior is unchanged.
+
 Headers are hidden. Screen content owns top and side safe-area insets; the
 non-overlay tab bar owns the bottom inset. Tab screens disable Screen's bottom
 safe area to avoid counting it twice. Standalone Screen use retains all edges.

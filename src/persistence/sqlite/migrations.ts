@@ -1,5 +1,6 @@
 import type { SQLiteConnection } from './connection';
 import { createFinancialTables } from './financialMigration';
+import { createAvailableMoneyTable } from './availableMoneyMigration';
 
 export interface Migration {
   readonly version: number;
@@ -32,6 +33,7 @@ export const migrations: readonly Migration[] = Object.freeze([
     },
   }),
   Object.freeze({ version: 3, up: createFinancialTables }),
+  Object.freeze({ version: 4, up: createAvailableMoneyTable }),
 ]);
 
 export function pendingMigrations(currentVersion: number, available: readonly Migration[]): readonly Migration[] {
