@@ -19,7 +19,9 @@ it, while removal is blocked during saving. The overview reads on focus and offe
 Add a debt. Screens call focused application operations; SQL remains in persistence.
 See [Add Debt](add-debt.md) and [Utang Overview](debt-overview.md).
 Kita follows the same form/success/overview navigation and focus-refresh pattern;
-see [Kita / Income](income.md). Essential Expense remains unavailable.
+see [Kita / Income](income.md). AddExpense and ExpenseOverview now follow the same
+pattern for [Essential Expenses](essential-expenses.md), reachable from the hub
+and the saved-expense state through View my expenses.
 
 Headers are hidden. Screen content owns top and side safe-area insets; the
 non-overlay tab bar owns the bottom inset. Tab screens disable Screen's bottom

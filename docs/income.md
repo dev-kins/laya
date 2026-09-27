@@ -4,8 +4,8 @@ Add → Kita opens Magdagdag ng kita. The hub and “Kita saved” state offer
 View my income → Mga Kita. The overview offers Add income and Back to Add.
 Success pops to an existing overview or replaces the saved form with one; Done
 returns to the previous screen. Back discards unsaved input, tab switching retains
-it, and navigation removal is blocked during saving. Essential Expense remains
-unavailable. Debt behavior is unchanged.
+it, and navigation removal is blocked during saving. Task #015 also enables
+[Essential Expense](essential-expenses.md). Debt behavior is unchanged.
 
 ## Input and domain boundaries
 

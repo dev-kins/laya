@@ -24,15 +24,11 @@ async function fillMinimum() {
   await fireEvent.changeText(screen.getByLabelText('Current balance (PHP)'), '10584.78');
   await fireEvent.press(screen.getByRole('radio', { name: 'I don’t know the rate' }));
 }
-test('hub retains Debt and unavailable Essential Expense, and opens the debt form', async () => {
+test('hub retains Debt while enabling Essential Expense, and opens the debt form', async () => {
   await render(<NavigationContainer><AddNavigator /></NavigationContainer>);
   expect(screen.getByRole('header', { name: 'Idagdag sa Laya' })).toBeOnTheScreen();
   expect(screen.getByRole('button', { name: 'Utang — Add a debt' })).toBeEnabled();
-  for (const name of ['Essential expense / Pangunahing gastusin — Coming next']) {
-    expect(screen.getByRole('button', { name })).toBeDisabled();
-    await fireEvent.press(screen.getByRole('button', { name }));
-    expect(screen.queryByRole('header', { name: 'Add a debt' })).toBeNull();
-  }
+  expect(screen.getByRole('button', { name: 'Essential expense — Add expense' })).toBeEnabled();
   await fireEvent.press(screen.getByRole('button', { name: 'Utang — Add a debt' }));
   expect(screen.getByRole('header', { name: 'Add a debt' })).toBeOnTheScreen();
   expect(screen.getByRole('radio', { name: 'No repeating schedule', checked: true })).toBeOnTheScreen();

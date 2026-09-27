@@ -1,8 +1,8 @@
 # Add Debt
 
 The Add tab contains a small native stack: AddHub → AddDebt, plus DebtOverview.
-Utang and Kita are active (see [Income](income.md));
-Essential Expense is disabled with a “Coming next” label. Home remains
+Utang, Kita (see [Income](income.md)) and
+[Essential Expense](essential-expenses.md) are active. Home remains
 the synthetic showcase. Done after saving pops back to the previous screen with a
 fresh form on the next visit. View my debts opens/returns to the overview; see
 [Utang Overview](debt-overview.md). Switching tabs retains the current form; Back discards an

@@ -31,14 +31,15 @@ export function AddHubScreen({ navigation }: NativeStackScreenProps<AddStackPara
       <LayaText variant="bodyStrong" style={styles.brand}>Add income →</LayaText>
     </Pressable>
     <Button label="View my income" variant="secondary" onPress={() => navigation.navigate('IncomeOverview')} />
-    {[['Essential expense / Pangunahing gastusin', 'The everyday needs you protect.']].map(([label, copy]) => (
-      <Pressable key={label} disabled accessibilityRole="button" accessibilityLabel={`${label} — Coming next`}
-        accessibilityState={{ disabled: true }} style={styles.unavailable}>
-        <LayaText variant="title">{label}</LayaText>
-        <LayaText variant="caption" style={styles.support}>{copy}</LayaText>
-        <LayaText variant="label" style={styles.support}>Coming next</LayaText>
-      </Pressable>
-    ))}
+    <Pressable accessibilityRole="button" accessibilityLabel="Essential expense — Add expense"
+      accessibilityHint="Open the essential expense form" onPress={() => navigation.navigate('AddExpense')}
+      style={({ pressed }) => [styles.income, pressed && styles.incomePressed]}>
+      <LayaText variant="caption" style={styles.support}>03 · ESSENTIAL EXPENSES</LayaText>
+      <LayaText variant="editorial" style={styles.brand}>Pangunahing gastusin</LayaText>
+      <LayaText style={styles.support}>The everyday needs you protect.</LayaText>
+      <LayaText variant="bodyStrong" style={styles.brand}>Add expense →</LayaText>
+    </Pressable>
+    <Button label="View my expenses" variant="secondary" onPress={() => navigation.navigate('ExpenseOverview')} />
     <LayaText variant="caption" style={styles.support}>Saved on this device. No bank connection needed.</LayaText>
   </Screen>;
 }
@@ -53,5 +54,4 @@ const styles = StyleSheet.create({
   incomePressed: { backgroundColor: colors.surfaceSubtle },
   gold: { color: colors.accent },
   light: { color: colors.onStrong },
-  unavailable: { minHeight: layout.touchTarget, paddingVertical: spacing.lg, gap: spacing.xs, borderBottomWidth: 1, borderBottomColor: colors.border },
 });

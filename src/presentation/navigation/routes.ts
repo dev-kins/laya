@@ -6,6 +6,8 @@ export type AddStackParamList = {
   DebtOverview: undefined;
   AddIncome: undefined;
   IncomeOverview: undefined;
+  AddExpense: undefined;
+  ExpenseOverview: undefined;
 };
 
 export type MainTabParamList = {
