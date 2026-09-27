@@ -1,7 +1,7 @@
 import { FinancialDate } from '../../domain/FinancialDate';
 import { Money } from '../../domain/Money';
 import { Recurrence } from '../../domain/Recurrence';
-import { formatFinancialDate, formatInterest, formatPHP, formatRecurrence } from './debt';
+import { formatFinancialDate, formatInterest, formatPHP, formatRecurrence } from './financial';
 
 test.each([
   [0, '₱0.00'], [1, '₱0.01'], [100, '₱1.00'], [176400, '₱1,764.00'],

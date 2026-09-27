@@ -8,7 +8,7 @@ export function FieldError({ message }: { message?: string }) {
     style={styles.error}>{message}</LayaText> : null;
 }
 
-export function DebtField({ label, hint, error, suffix, ...props }: TextInputProps & {
+export function FinancialField({ label, hint, error, suffix, ...props }: TextInputProps & {
   label: string; hint?: string; error?: string; suffix?: string;
 }) {
   return <View style={styles.field}>
@@ -25,7 +25,7 @@ export function DebtField({ label, hint, error, suffix, ...props }: TextInputPro
   </View>;
 }
 
-export function DebtChoice({ label, selected, disabled, onPress }: {
+export function FinancialChoice({ label, selected, disabled, onPress }: {
   label: string; selected: boolean; disabled: boolean; onPress: () => void;
 }) {
   return <Pressable accessibilityRole="radio" accessibilityLabel={label}

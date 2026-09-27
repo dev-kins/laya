@@ -6,7 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { createAddDebtOperation } from '../../application/addDebt';
 import { DebtFormError, emptyDebtForm, type DebtForm, type DebtFormErrors } from '../../application/debtForm';
-import { DebtChoice, DebtField, FieldError } from '../components/DebtFormControls';
+import { FinancialChoice, FinancialField, FieldError } from '../components/FinancialFormControls';
 import { Button, LayaText } from '../components/primitives';
 import type { AddStackParamList } from '../navigation/routes';
 import { colors, layout, spacing } from '../theme/tokens';
@@ -79,46 +79,46 @@ export function AddDebtScreen({ navigation }: NativeStackScreenProps<AddStackPar
             </View>
             {Object.values(errors).some(Boolean) ? <FieldError message="Please review the fields below." /> : null}
             {failure ? <FieldError message="We couldn’t save this debt on your device. Your entries are still here. Please try again." /> : null}
-            <DebtField label="Debt name" placeholder="e.g. Personal loan" value={form.name}
+            <FinancialField label="Debt name" placeholder="e.g. Personal loan" value={form.name}
               onChangeText={value => update('name', value)} error={errors.name} editable={!saving} />
-            <DebtField label="Provider (optional)" placeholder="e.g. Your lender" value={form.provider}
+            <FinancialField label="Provider (optional)" placeholder="e.g. Your lender" value={form.provider}
               onChangeText={value => update('provider', value)} error={errors.provider} editable={!saving} />
-            <DebtField label="Current balance (PHP)" suffix="PHP" placeholder="0.00" keyboardType="decimal-pad"
+            <FinancialField label="Current balance (PHP)" suffix="PHP" placeholder="0.00" keyboardType="decimal-pad"
               hint="What remains to pay. Use a decimal point, without commas or a currency symbol."
               value={form.balance} onChangeText={value => update('balance', value)} error={errors.balance} editable={!saving} />
             <View style={styles.section}>
               <LayaText variant="title" accessibilityRole="header">Interest</LayaText>
               <LayaText variant="caption" style={styles.warm}>Not knowing is okay. Zero means you know there is no interest.</LayaText>
-              <DebtChoice label="I don’t know the rate" selected={form.interestChoice === 'unknown'} disabled={saving}
+              <FinancialChoice label="I don’t know the rate" selected={form.interestChoice === 'unknown'} disabled={saving}
                 onPress={() => update('interestChoice', 'unknown')} />
-              <DebtChoice label="I know the rate" selected={form.interestChoice === 'known'} disabled={saving}
+              <FinancialChoice label="I know the rate" selected={form.interestChoice === 'known'} disabled={saving}
                 onPress={() => update('interestChoice', 'known')} />
               <FieldError message={errors.interestChoice} />
               {form.interestChoice === 'known' ? <>
-                <DebtField label="Interest rate (%)" suffix="%" keyboardType="decimal-pad" placeholder="e.g. 1.25"
+                <FinancialField label="Interest rate (%)" suffix="%" keyboardType="decimal-pad" placeholder="e.g. 1.25"
                   value={form.interestRate} onChangeText={value => update('interestRate', value)} error={errors.interestRate} editable={!saving} />
                 <LayaText variant="label">Rate period</LayaText>
-                <DebtChoice label="Annual" selected={form.interestPeriod === 'annual'} disabled={saving} onPress={() => update('interestPeriod', 'annual')} />
-                <DebtChoice label="Monthly" selected={form.interestPeriod === 'monthly'} disabled={saving} onPress={() => update('interestPeriod', 'monthly')} />
+                <FinancialChoice label="Annual" selected={form.interestPeriod === 'annual'} disabled={saving} onPress={() => update('interestPeriod', 'annual')} />
+                <FinancialChoice label="Monthly" selected={form.interestPeriod === 'monthly'} disabled={saving} onPress={() => update('interestPeriod', 'monthly')} />
                 <FieldError message={errors.interestPeriod} />
               </> : null}
             </View>
             <View style={[styles.section, styles.divider]}>
               <LayaText variant="editorial" accessibilityRole="header">Payment details</LayaText>
               <LayaText variant="caption" style={styles.warm}>Each detail is optional. Add only what you know.</LayaText>
-              <DebtField label="Regular payment (optional, PHP)" suffix="PHP" keyboardType="decimal-pad" placeholder="Not yet known"
+              <FinancialField label="Regular payment (optional, PHP)" suffix="PHP" keyboardType="decimal-pad" placeholder="Not yet known"
                 value={form.scheduledPayment} onChangeText={value => update('scheduledPayment', value)} error={errors.scheduledPayment} editable={!saving} />
-              <DebtField label="Next due date (optional)" hint="YYYY-MM-DD · for example, 2026-10-31" placeholder="YYYY-MM-DD"
+              <FinancialField label="Next due date (optional)" hint="YYYY-MM-DD · for example, 2026-10-31" placeholder="YYYY-MM-DD"
                 autoCapitalize="none" value={form.nextDueDate} onChangeText={value => update('nextDueDate', value)} error={errors.nextDueDate} editable={!saving} />
               <LayaText variant="label">Payment schedule (optional)</LayaText>
-              <DebtChoice label="No repeating schedule" selected={form.recurrence === 'none'} disabled={saving} onPress={() => update('recurrence', 'none')} />
-              <DebtChoice label="Monthly schedule" selected={form.recurrence === 'monthly'} disabled={saving} onPress={() => update('recurrence', 'monthly')} />
-              <DebtChoice label="Twice a month" selected={form.recurrence === 'twice-monthly'} disabled={saving} onPress={() => update('recurrence', 'twice-monthly')} />
+              <FinancialChoice label="No repeating schedule" selected={form.recurrence === 'none'} disabled={saving} onPress={() => update('recurrence', 'none')} />
+              <FinancialChoice label="Monthly schedule" selected={form.recurrence === 'monthly'} disabled={saving} onPress={() => update('recurrence', 'monthly')} />
+              <FinancialChoice label="Twice a month" selected={form.recurrence === 'twice-monthly'} disabled={saving} onPress={() => update('recurrence', 'twice-monthly')} />
               <FieldError message={errors.recurrence} />
               {form.recurrence !== 'none' ? <>
-                <DebtField label={form.recurrence === 'monthly' ? 'Day of month' : 'First day'} keyboardType="number-pad"
+                <FinancialField label={form.recurrence === 'monthly' ? 'Day of month' : 'First day'} keyboardType="number-pad"
                   hint="Choose a day from 1 to 31." value={form.firstDay} onChangeText={value => update('firstDay', value)} error={errors.firstDay} editable={!saving} />
-                {form.recurrence === 'twice-monthly' ? <DebtField label="Second day" keyboardType="number-pad"
+                {form.recurrence === 'twice-monthly' ? <FinancialField label="Second day" keyboardType="number-pad"
                   hint="Choose a different day from 1 to 31." value={form.secondDay} onChangeText={value => update('secondDay', value)} error={errors.secondDay} editable={!saving} /> : null}
                 <LayaText variant="caption" style={styles.warm}>Days 30 and 31 stay as entered. Shorter months are handled when a schedule is calculated.</LayaText>
               </> : null}

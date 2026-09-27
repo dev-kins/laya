@@ -22,7 +22,16 @@ export function AddHubScreen({ navigation }: NativeStackScreenProps<AddStackPara
       <LayaText variant="bodyStrong" style={styles.light}>Add a debt →</LayaText>
     </Pressable>
     <Button label="View my debts" variant="secondary" onPress={() => navigation.navigate('DebtOverview')} />
-    {[['Kita / Income', 'Money you expect or have received.'], ['Essential expense / Pangunahing gastusin', 'The everyday needs you protect.']].map(([label, copy]) => (
+    <Pressable accessibilityRole="button" accessibilityLabel="Kita — Add income"
+      accessibilityHint="Open the income form" onPress={() => navigation.navigate('AddIncome')}
+      style={({ pressed }) => [styles.income, pressed && styles.incomePressed]}>
+      <LayaText variant="caption" style={styles.support}>02 · YOUR INCOME</LayaText>
+      <LayaText variant="editorial" style={styles.brand}>Kita</LayaText>
+      <LayaText style={styles.support}>Money you expect or have received.</LayaText>
+      <LayaText variant="bodyStrong" style={styles.brand}>Add income →</LayaText>
+    </Pressable>
+    <Button label="View my income" variant="secondary" onPress={() => navigation.navigate('IncomeOverview')} />
+    {[['Essential expense / Pangunahing gastusin', 'The everyday needs you protect.']].map(([label, copy]) => (
       <Pressable key={label} disabled accessibilityRole="button" accessibilityLabel={`${label} — Coming next`}
         accessibilityState={{ disabled: true }} style={styles.unavailable}>
         <LayaText variant="title">{label}</LayaText>
@@ -40,6 +49,8 @@ const styles = StyleSheet.create({
   support: { color: colors.textWarm },
   debt: { minHeight: layout.touchTarget, padding: spacing.xl, gap: spacing.sm, backgroundColor: colors.surfaceStrong, borderRadius: radii.surface },
   pressed: { backgroundColor: colors.primary },
+  income: { minHeight: layout.touchTarget, paddingVertical: spacing.lg, gap: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border },
+  incomePressed: { backgroundColor: colors.surfaceSubtle },
   gold: { color: colors.accent },
   light: { color: colors.onStrong },
   unavailable: { minHeight: layout.touchTarget, paddingVertical: spacing.lg, gap: spacing.xs, borderBottomWidth: 1, borderBottomColor: colors.border },

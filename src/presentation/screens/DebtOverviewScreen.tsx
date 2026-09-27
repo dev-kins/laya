@@ -6,7 +6,7 @@ import { StyleSheet, View } from 'react-native';
 import { listDebts } from '../../application/listDebts';
 import type { Debt } from '../../domain/Debt';
 import { Button, LayaText, Screen, Surface } from '../components/primitives';
-import { formatFinancialDate, formatInterest, formatPHP, formatRecurrence } from '../formatters/debt';
+import { formatFinancialDate, formatInterest, formatPHP, formatRecurrence } from '../formatters/financial';
 import type { AddStackParamList } from '../navigation/routes';
 import { colors, spacing } from '../theme/tokens';
 
