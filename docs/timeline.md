@@ -2,7 +2,8 @@
 
 Timeline answers what scheduled events come next and how each affects a scenario
 starting with the user's manually reported Available Money. It reads real local
-records; Home remains a clearly labeled synthetic showcase.
+records. Task #021's [real Home](home.md) reuses this loader and adds Safe-to-Pay
+to its own summary; Timeline's behavior is unchanged.
 
 ## Composition and ownership
 

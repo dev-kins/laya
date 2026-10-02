@@ -13,6 +13,7 @@ import { Recurrence } from '../src/domain/Recurrence';
 import { AddNavigator } from '../src/presentation/navigation/AddNavigator';
 
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
+jest.mock('../src/application/loadHome');
 jest.mock('../src/application/listDebts', () => ({ listDebts: jest.fn() }));
 jest.mock('../src/application/addDebt', () => ({ createAddDebtOperation: jest.fn() }));
 jest.mock('../src/application/onboarding', () => ({ onboardingService: { isComplete: jest.fn(), complete: jest.fn() } }));

@@ -10,7 +10,8 @@ Main tabs are Home (initial), Timeline, Add, Plan, and Profile. Android back
 returns from another tab to Home, then follows the platform's normal app-exit
 behavior. React Navigation owns transient navigation state; it is not persisted.
 
-Home temporarily reuses `VisualShowcase` with clearly labeled synthetic data.
+Home now displays the [real financial outlook and Safe-to-Pay](home.md).
+The unused synthetic VisualShowcase has been removed.
 Timeline now displays the [real financial projection](timeline.md); Plan and Profile remain route shells. Add contains a nested native
 stack for AddHub, AddDebt, DebtOverview, AddIncome and IncomeOverview. AddHub and the saved-debt state offer
 View my debts. Success pops to an existing overview (or replaces the saved form
@@ -29,7 +30,9 @@ failure, and preserves drafts across tab switches. Saving replaces the singleton
 Done returns to AddHub. The hub shows no cached amount. See
 [Available money](available-money.md). Timeline's missing-money action opens this
 same editor through the typed nested Add route, retaining AddHub beneath it.
-Returning to Timeline refreshes its data on focus. Home remains unchanged.
+Returning to Timeline refreshes its data on focus. Home's setup/update actions
+reuse the same editor, and View timeline selects the existing Timeline tab.
+Home also refreshes on focus and ignores superseded results.
 
 Headers are hidden. Screen content owns top and side safe-area insets; the
 non-overlay tab bar owns the bottom inset. Tab screens disable Screen's bottom

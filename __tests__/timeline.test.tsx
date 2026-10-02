@@ -11,6 +11,7 @@ import { Money } from '../src/domain/Money';
 import { projectCashFlow } from '../src/domain/projectCashFlow';
 
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
+jest.mock('../src/application/loadHome');
 jest.mock('../src/application/loadTimeline', () => ({ loadTimeline: jest.fn() }));
 jest.mock('../src/application/onboarding', () => ({ onboardingService: { isComplete: jest.fn(), complete: jest.fn() } }));
 jest.mock('../src/application/availableMoney', () => ({ readAvailableMoney: jest.fn(), saveAvailableMoney: jest.fn() }));
@@ -36,10 +37,15 @@ function deferred() {
   return { promise, resolve, reject };
 }
 beforeEach(() => {
+  jest.useFakeTimers();
   read.mockReset().mockResolvedValue(ready());
   jest.mocked(onboardingService.isComplete).mockResolvedValue(true);
   jest.mocked(readAvailableMoney).mockResolvedValue(null);
   jest.mocked(saveAvailableMoney).mockResolvedValue(AvailableMoney.create({ amount: php(0) }));
+});
+afterEach(async () => {
+  await act(async () => { jest.runOnlyPendingTimers(); });
+  jest.useRealTimers();
 });
 async function open() { await render(<App />); await fireEvent.press(screen.getByRole('tab', { name: 'Timeline' })); }
 

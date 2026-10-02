@@ -4,6 +4,7 @@ import App from '../App';
 import { onboardingService } from '../src/application/onboarding';
 
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
+jest.mock('../src/application/loadHome');
 jest.mock('../src/application/onboarding', () => ({ onboardingService: { isComplete: jest.fn(), complete: jest.fn() } }));
 const read = jest.mocked(onboardingService.isComplete);
 const save = jest.mocked(onboardingService.complete);

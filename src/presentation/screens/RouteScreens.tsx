@@ -1,10 +1,4 @@
 import { LayaText, Screen } from '../components/primitives';
-import { VisualShowcase } from '../VisualShowcase';
-
-export function HomeScreen() {
-  // Temporary synthetic Home content; retain the approved showcase without duplicating it.
-  return <VisualShowcase bottomSafeArea={false} />;
-}
 
 function Placeholder({ title, description }: { title: string; description: string }) {
   return (
