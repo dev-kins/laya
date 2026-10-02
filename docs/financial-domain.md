@@ -78,3 +78,8 @@ exceptions and reconciliation rules require explicit decisions. Task #017 adds
 [pure event generation](financial-event-generation.md), including the approved
 debt next-due cycle-replacement policy, without changing these entity invariants.
 Reconciliation remains outside generation. No persistence or UI is added by this model.
+
+Task #018 adds [pure cash-flow projection](cash-flow-projection.md) as a separate
+consumer of FinancialEvents and caller-supplied starting Money/date. It applies
+only forecasts over (startDate, through], retaining actuals as audit exclusions.
+Existing entity, generator, Money, and date semantics remain unchanged.
