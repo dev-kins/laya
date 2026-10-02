@@ -39,3 +39,10 @@ Host SQLite tests verify migration, rollback/retry, semantics, and reopen behavi
 they do not prove Expo SQLite behavior on Android. Device review must check first
 launch, Get Started, relaunch bypass, back behavior, narrow widths, large text,
 and visual balance against the canonical design.
+
+Task #027 adds a separate `OnboardingReview` root route from Profile. It reuses
+the presentation with a review heading and Done reviewing action wired only to
+navigation back. Review neither invokes the completion service nor changes the
+stored first-launch preference or financial records. Its typed mode accepts no
+saving/error props. The first-launch gate and Get Started behavior above remain
+unchanged. See [Profile](profile.md) for review validation and the device checklist.

@@ -1,8 +1,9 @@
 import { DefaultTheme, NavigationContainer, type Theme } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { createNativeStackNavigator, type NativeStackScreenProps } from '@react-navigation/native-stack';
 import type { ReactNode } from 'react';
 
 import { colors } from '../theme/tokens';
+import { OnboardingScreen } from '../screens/OnboardingScreen';
 import { MainTabs } from './MainTabs';
 import type { RootStackParamList } from './routes';
 
@@ -20,6 +21,10 @@ const theme: Theme = {
   },
 };
 
+function OnboardingReview({ navigation }: NativeStackScreenProps<RootStackParamList, 'OnboardingReview'>) {
+  return <OnboardingScreen mode="review" onComplete={() => navigation.goBack()} />;
+}
+
 export function RootNavigator({ onboarding }: { onboarding?: ReactNode }) {
   return (
     <NavigationContainer theme={theme}>
@@ -27,7 +32,10 @@ export function RootNavigator({ onboarding }: { onboarding?: ReactNode }) {
         {onboarding ? (
           <Stack.Screen name="Onboarding">{() => onboarding}</Stack.Screen>
         ) : (
-          <Stack.Screen name="MainTabs" component={MainTabs} />
+          <>
+            <Stack.Screen name="MainTabs" component={MainTabs} />
+            <Stack.Screen name="OnboardingReview" component={OnboardingReview} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>

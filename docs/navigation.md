@@ -12,7 +12,7 @@ behavior. React Navigation owns transient navigation state; it is not persisted.
 
 Home now displays the [real financial outlook and Safe-to-Pay](home.md).
 The unused synthetic VisualShowcase has been removed.
-Timeline now displays the [real financial projection](timeline.md), and Plan displays the [factual planning overview](plan.md). Profile remains a route shell. Add contains a nested native
+Timeline now displays the [real financial projection](timeline.md), and Plan displays the [planning overview and strategy scenarios](plan.md). Profile displays [Your Laya settings and information](profile.md). Add contains a nested native
 stack for AddHub, AddDebt, DebtOverview, AddIncome and IncomeOverview. AddHub and the saved-debt state offer
 View my debts. Success pops to an existing overview (or replaces the saved form
 with one). Done returns to the previous screen; back from an unsaved form discards
@@ -49,3 +49,11 @@ checks bundling, not device rendering or hardware-back behavior; those still
 require a device review.
 
 See [first-launch behavior](onboarding.md) for persistence and startup semantics.
+
+Profile has no financial loader. Its Available Money action reuses the nested Add
+route; Back/Done follows the editor's existing Add return, and the Profile tab
+remains available. Review how Laya works opens the root `OnboardingReview` route,
+available only alongside MainTabs after completion. It reuses onboarding in a
+presentation-only review mode. Done reviewing or stack back returns to Profile;
+neither invokes completion or changes stored records. First-launch Onboarding and
+StartupGate remain unchanged, and there is no separate Profile stack.

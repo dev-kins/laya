@@ -44,7 +44,7 @@ test.each(['Timeline', 'Plan', 'Profile', 'Add'])('%s tab opens its route and re
   const user = userEvent.setup();
   await render(<App />);
   await user.press(screen.getByRole('tab', { name }));
-  expect(screen.getByRole('header', { name: name === 'Add' ? 'Idagdag sa Laya' : name })).toBeOnTheScreen();
+  expect(screen.getByRole('header', { name: name === 'Add' ? 'Idagdag sa Laya' : name === 'Profile' ? 'Your Laya' : name })).toBeOnTheScreen();
   expect(screen.getByRole('tab', { name, selected: true })).toBeOnTheScreen();
   expect(screen.getByRole('tab', { name: 'Home', selected: false })).toBeOnTheScreen();
   expect(screen.queryByText('Your financial outlook')).not.toBeVisible();

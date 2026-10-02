@@ -3,13 +3,17 @@ import { StyleSheet, View } from 'react-native';
 import { Button, LayaText, Screen } from '../components/primitives';
 import { colors, radii, spacing } from '../theme/tokens';
 
-export function OnboardingScreen({ saving, error, onComplete }: {
-  saving: boolean;
-  error: boolean;
-  onComplete: () => void;
-}) {
+type Props = { onComplete: () => void } & (
+  { mode?: 'first-launch'; saving: boolean; error: boolean } | { mode: 'review' }
+);
+
+export function OnboardingScreen(props: Props) {
+  const reviewing = props.mode === 'review';
+  const saving = props.mode === 'review' ? false : props.saving;
+  const error = props.mode === 'review' ? false : props.error;
   return (
     <Screen>
+      {reviewing ? <LayaText variant="heading" accessibilityRole="header">Review how Laya works</LayaText> : null}
       {/* Decorative atmosphere only, never a replacement for the official logo. */}
       <View style={styles.landscape} accessible={false} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         <View style={styles.sun} />
@@ -28,7 +32,7 @@ export function OnboardingScreen({ saving, error, onComplete }: {
           We couldn’t save your progress. Please try Get Started again.
         </LayaText>
       ) : null}
-      <Button label="Get Started" onPress={onComplete} disabled={saving} />
+      <Button label={reviewing ? 'Done reviewing' : 'Get Started'} onPress={props.onComplete} disabled={saving} />
       {saving ? <LayaText accessibilityLiveRegion="polite" style={styles.support}>Saving your progress…</LayaText> : null}
       <LayaText variant="caption" style={styles.support}>Disiplina sa ngayon, Layang bukas.</LayaText>
     </Screen>

@@ -21,5 +21,6 @@ export type MainTabParamList = {
 
 export type RootStackParamList = {
   Onboarding: undefined;
+  OnboardingReview: undefined;
   MainTabs: NavigatorScreenParams<MainTabParamList> | undefined;
 };
