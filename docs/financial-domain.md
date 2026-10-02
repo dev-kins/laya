@@ -74,6 +74,7 @@ All construction validates and copies nested primitives/rules, then freezes owne
 state. No monetary arithmetic, rounding, rate conversion, clock reads, random IDs,
 event expansion, projection, payoff, or balance reconciliation is introduced.
 Money, FinancialDate, and Recurrence contracts remain unchanged. Schedule start/end,
-exceptions and reconciliation rules remain future decisions; no recurring financial
-event generator is provided until those assumptions are defined. No persistence or
-UI is added by this model.
+exceptions and reconciliation rules require explicit decisions. Task #017 adds
+[pure event generation](financial-event-generation.md), including the approved
+debt next-due cycle-replacement policy, without changing these entity invariants.
+Reconciliation remains outside generation. No persistence or UI is added by this model.
