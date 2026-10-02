@@ -4,6 +4,7 @@ import type { FinancialDate } from '../domain/FinancialDate';
 import { generateFinancialEvents } from '../domain/generateFinancialEvents';
 import { Money } from '../domain/Money';
 import { projectCashFlow } from '../domain/projectCashFlow';
+import { composePlanStrategies, type PlanStrategies } from './composePlanStrategies';
 import { withFinancialSnapshot, type FinancialSnapshotDependencies } from './withFinancialSnapshot';
 
 export interface PlanResult {
@@ -18,6 +19,7 @@ export interface PlanResult {
   readonly context: Readonly<{ kind: 'missing-available-money' }> | Readonly<{
     kind: 'ready'; availableMoney: Money; safeToPay: SafeToPayResult;
     lowestProjected: Money; endingProjected: Money;
+    strategies: PlanStrategies;
   }>;
 }
 interface PlanDependencies extends FinancialSnapshotDependencies {
@@ -25,7 +27,7 @@ interface PlanDependencies extends FinancialSnapshotDependencies {
   project: typeof projectCashFlow;
 }
 
-/** Factual snapshots and schedules only: never subtract payments or allocate money. */
+/** One snapshot for factual summaries and proposed strategy scenarios; no writes. */
 export async function loadPlan(overrides: Partial<PlanDependencies> = {}): Promise<PlanResult> {
   const deps = { generate: generateFinancialEvents, project: projectCashFlow, ...overrides };
   return withFinancialSnapshot(({ startDate, through, available, debts, incomes, essentialObligations, debtPayments }) => {
@@ -44,8 +46,9 @@ export async function loadPlan(overrides: Partial<PlanDependencies> = {}): Promi
     let context: PlanResult['context'] = Object.freeze({ kind: 'missing-available-money' });
     if (available !== null) {
       const projection = deps.project({ startingBalance: available.amount, startDate, through, events });
+      const safeToPay = calculateSafeToPay(projection);
       context = Object.freeze({ kind: 'ready', availableMoney: projection.start.balance,
-        safeToPay: calculateSafeToPay(projection), lowestProjected: projection.minimumProjectedBalance,
+        safeToPay, strategies: composePlanStrategies(debts, safeToPay), lowestProjected: projection.minimumProjectedBalance,
         endingProjected: projection.endingBalance });
     }
     return Object.freeze({ startDate, through, debts: Object.freeze([...debts]), recordedDebtCount: debts.length,

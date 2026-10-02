@@ -4,12 +4,14 @@ import { useCallback, useRef, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { loadPlan, type PlanResult } from '../../application/loadPlan';
+import type { PlanStrategy } from '../../application/composePlanStrategies';
 import type { Debt } from '../../domain/Debt';
 import type { Money } from '../../domain/Money';
 import { Button, LayaText, Screen, Surface } from '../components/primitives';
 import { formatFinancialDate, formatInterest, formatPHP } from '../formatters/financial';
 import type { MainTabParamList } from '../navigation/routes';
 import { colors, spacing } from '../theme/tokens';
+import { PlanStrategies } from './PlanStrategies';
 
 type State = { kind: 'loading' } | { kind: 'error' } | { kind: 'ready'; result: PlanResult };
 const spokenPHP = (money: Money) => formatPHP(money).replace('-', 'minus ').replace('₱', '') + ' Philippine pesos';
@@ -33,6 +35,7 @@ function DebtSummary({ debt }: { debt: Debt }) {
 
 export function PlanScreen({ navigation }: BottomTabScreenProps<MainTabParamList, 'Plan'>) {
   const [state, setState] = useState<State>({ kind: 'loading' });
+  const [selectedStrategy, setSelectedStrategy] = useState<PlanStrategy>('adaptive');
   const request = useRef(0);
   const refresh = useCallback(() => {
     const current = ++request.current;
@@ -65,6 +68,8 @@ export function PlanScreen({ navigation }: BottomTabScreenProps<MainTabParamList
         <LayaText style={styles.light}>Recorded debts · {result.recordedDebtCount}</LayaText>
       </Surface>
       <LayaText variant="caption" style={styles.warm}>Recorded debt balances are user-reported snapshots. Laya does not subtract recorded payment history from those balances automatically.</LayaText>
+      {result.context.kind === 'ready' ? <PlanStrategies scenarios={result.context.strategies}
+        selected={selectedStrategy} onSelect={setSelectedStrategy} /> : <LayaText style={styles.warm}>Set Available Money to calculate Safe-to-Pay and explore strategy allocations. Your recorded debt facts remain available.</LayaText>}
       <View style={styles.section}>
         <LayaText variant="editorial" accessibilityRole="header" style={styles.green}>60-day debt schedule</LayaText>
         <LayaText variant="caption" style={styles.warm}>After {formatFinancialDate(result.startDate)} through {formatFinancialDate(result.through)}</LayaText>
@@ -84,7 +89,6 @@ export function PlanScreen({ navigation }: BottomTabScreenProps<MainTabParamList
           <Button label="Set available money" onPress={() => navigation.navigate('Add', { screen: 'AvailableMoney', initial: false })} />
         </> : <>
           <Amount label="Available now" amount={result.context.availableMoney} />
-          <Amount label="Safe-to-Pay" amount={result.context.safeToPay.amount} />
           <Amount label="Lowest projected" amount={result.context.lowestProjected} />
           <Amount label="Ending projected" amount={result.context.endingProjected} />
           <LayaText variant="caption" style={styles.warm}>Based on recorded information for the next 60 days. A planning estimate, not a bank balance, guarantee or recommendation to put this amount toward debt.</LayaText>
@@ -101,11 +105,6 @@ export function PlanScreen({ navigation }: BottomTabScreenProps<MainTabParamList
           <Button label="View debts" variant="secondary" onPress={() => navigation.navigate('Add', { screen: 'DebtOverview', initial: false })} />
         </>}
         <Button label="Add debt" onPress={() => navigation.navigate('Add', { screen: 'AddDebt', initial: false })} />
-      </View>
-      <View style={styles.section}>
-        <LayaText variant="editorial" accessibilityRole="header" style={styles.green}>Debt strategy</LayaText>
-        <LayaText>{result.recordedDebtCount === 0 ? 'Recorded debts will provide a starting point for a future payoff plan.' : 'Your recorded debts are available for a future payoff plan.'}</LayaText>
-        <LayaText variant="caption" style={styles.warm}>No payoff strategy or payment priority is selected here.</LayaText>
       </View>
     </> : null}
   </Screen>;

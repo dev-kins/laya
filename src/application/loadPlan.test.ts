@@ -13,6 +13,8 @@ import type { FinancialConnection } from '../persistence/sqlite/connection';
 import { loadHome } from './loadHome';
 import { loadPlan } from './loadPlan';
 import { loadTimeline } from './loadTimeline';
+import * as allocationEngine from '../domain/allocateSafeToPay';
+import * as safeToPayEngine from '../domain/calculateSafeToPay';
 
 const date = FinancialDate.parse;
 const php = (n: number) => Money.fromMinorUnits(n, 'PHP');
@@ -137,4 +139,77 @@ test('result waits for the owned connection to close', async () => {
   jest.mocked(db.closeAsync).mockImplementation(() => { entered(); return new Promise(resolve => { finish = resolve; }); });
   const complete = jest.fn(); const pending = run().then(complete); await closing; expect(complete).not.toHaveBeenCalled();
   finish(); await pending; expect(complete).toHaveBeenCalledTimes(1);
+});
+
+test('one Plan load composes three ordered scenarios using one identical SafeToPayResult', async () => {
+  const { run, repos, deps, db } = setup(300001);
+  const records = [debt({ id: debtId('B'), balance: php(800000), interest: { kind: 'known', basisPoints: 200, period: 'monthly' } }),
+    debt({ id: debtId('C'), balance: php(400000), interest: { kind: 'known', basisPoints: 1800, period: 'annual' } }),
+    debt({ id: debtId('A'), balance: php(150001), interest: { kind: 'known', basisPoints: 500, period: 'annual' } })];
+  repos.debts.list.mockResolvedValue(records); const before = JSON.stringify(records);
+  const allocate = jest.spyOn(allocationEngine, 'allocateSafeToPay'), calculate = jest.spyOn(safeToPayEngine, 'calculateSafeToPay');
+  try {
+    const result = await run(); if (result.context.kind !== 'ready') throw Error('ready');
+    const { strategies, safeToPay } = result.context;
+    expect(calculate).toHaveBeenCalledTimes(1); expect(allocate).toHaveBeenCalledTimes(3);
+    expect(deps.project).toHaveBeenCalledTimes(1); expect(deps.open).toHaveBeenCalledTimes(1); expect(db.closeAsync).toHaveBeenCalledTimes(1);
+    Object.values(repos).forEach(repo => expect('get' in repo ? repo.get : repo.list).toHaveBeenCalledTimes(1));
+    expect(strategies.snowball.orderedEntries.map(e => e.debt.id)).toEqual(['A', 'C', 'B']);
+    expect(strategies.avalanche.orderedEntries.map(e => e.debt.id)).toEqual(['B', 'C', 'A']);
+    expect(strategies.adaptive.orderedEntries.map(e => [e.debt.id, e.category])).toEqual([
+      ['A', 'clearable-within-safe-to-pay'], ['B', 'remaining-avalanche-order'], ['C', 'remaining-avalanche-order'],
+    ]);
+    expect(strategies.snowball.allocation.allocations.map(e => [e.debt.id, e.amount.minorUnits, e.coverage]))
+      .toEqual([['A', 150001, 'full'], ['C', 150000, 'partial']]);
+    expect(strategies.avalanche.allocation.allocations.map(e => [e.debt.id, e.amount.minorUnits, e.coverage]))
+      .toEqual([['B', 300001, 'partial']]);
+    expect(strategies.adaptive.allocation.allocations.map(e => [e.debt.id, e.amount.minorUnits, e.coverage]))
+      .toEqual([['A', 150001, 'full'], ['B', 150000, 'partial']]);
+    Object.values(strategies).forEach((scenario, i) => {
+      expect(scenario.safeToPay).toBe(safeToPay); expect(allocate.mock.calls[i][0].safeToPay).toBe(safeToPay);
+      expect(scenario.allocation).toBe(allocate.mock.results[i].value);
+      expect(scenario.allocation.protectionStartDate).toEqual(result.startDate);
+      expect(scenario.allocation.protectionThroughDate).toEqual(result.through);
+      expect(scenario.allocation.totalAllocated).toEqual(php(300001)); expect(scenario.allocation.remainingSafeToPay).toEqual(php(0));
+      expect(Object.isFrozen(scenario)).toBe(true);
+      scenario.orderedEntries.forEach(e => expect(records.includes(e.debt)).toBe(true));
+    });
+    expect(Object.isFrozen(strategies)).toBe(true); expect(JSON.stringify(records)).toBe(before);
+    expect(Object.isFrozen(records)).toBe(false); expect(await run()).toEqual(result);
+  } finally { allocate.mockRestore(); calculate.mockRestore(); }
+});
+test.each([0, 100001])('zero and excess capacity %s retain zero-balance debts without allocation entries', async units => {
+  const { run, repos } = setup(units);
+  repos.debts.list.mockResolvedValue([debt({ balance: php(50001) }), debt({ id: debtId('zero'), balance: php(0) })]);
+  const result = await run(); if (result.context.kind !== 'ready') throw Error('ready');
+  for (const scenario of Object.values(result.context.strategies)) {
+    expect(scenario.orderedEntries).toHaveLength(2);
+    expect(scenario.allocation.allocations.map(e => e.debt.id)).toEqual(units === 0 ? [] : ['A']);
+    expect(scenario.allocation.totalAllocated).toEqual(php(units === 0 ? 0 : 50001));
+    expect(scenario.allocation.remainingSafeToPay).toEqual(php(units === 0 ? 0 : 50000));
+  }
+});
+test('empty debts still produce three valid scenarios with unused real capacity', async () => {
+  const result = await setup(100).run(); if (result.context.kind !== 'ready') throw Error('ready');
+  expect(Object.keys(result.context.strategies)).toEqual(['snowball', 'avalanche', 'adaptive']);
+  for (const scenario of Object.values(result.context.strategies)) {
+    expect(scenario.orderedEntries).toEqual([]); expect(scenario.allocation.allocations).toEqual([]);
+    expect(scenario.allocation.totalAllocated).toEqual(php(0)); expect(scenario.allocation.remainingSafeToPay).toEqual(php(100));
+  }
+});
+test('missing money preserves debt facts without calling capacity or allocation engines', async () => {
+  const { run, repos } = setup(); repos.debts.list.mockResolvedValue([debt()]);
+  const allocate = jest.spyOn(allocationEngine, 'allocateSafeToPay'), calculate = jest.spyOn(safeToPayEngine, 'calculateSafeToPay');
+  try {
+    const result = await run(); expect(result.recordedDebtCount).toBe(1); expect(result.totalReportedDebt).toEqual(php(1058478));
+    expect(result.context).toEqual({ kind: 'missing-available-money' });
+    expect(calculate).not.toHaveBeenCalled(); expect(allocate).not.toHaveBeenCalled();
+  } finally { allocate.mockRestore(); calculate.mockRestore(); }
+});
+test('scenario composition failure still preserves the failure and close failure', async () => {
+  const { run, db } = setup(100); const error = Error('allocation'), close = Error('close');
+  const allocate = jest.spyOn(allocationEngine, 'allocateSafeToPay').mockImplementation(() => { throw error; });
+  jest.mocked(db.closeAsync).mockRejectedValue(close);
+  try { await expect(run()).rejects.toMatchObject({ errors: [error, close] }); expect(db.closeAsync).toHaveBeenCalledTimes(1); }
+  finally { allocate.mockRestore(); }
 });
