@@ -2,12 +2,16 @@ import { render, screen, userEvent } from '@testing-library/react-native';
 
 import App from '../App';
 import { onboardingService } from '../src/application/onboarding';
+import { loadTimeline } from '../src/application/loadTimeline';
+import { FinancialDate } from '../src/domain/FinancialDate';
 
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
 jest.mock('../src/application/onboarding', () => ({ onboardingService: { isComplete: jest.fn(), complete: jest.fn() } }));
+jest.mock('../src/application/loadTimeline', () => ({ loadTimeline: jest.fn() }));
 
 beforeEach(() => {
   jest.mocked(onboardingService.isComplete).mockResolvedValue(true);
+  jest.mocked(loadTimeline).mockResolvedValue({ kind: 'missing-available-money', startDate: FinancialDate.parse('2026-10-02'), through: FinancialDate.parse('2026-12-01') });
 });
 
 test('renders a clearly labeled synthetic visual showcase', async () => {
@@ -37,6 +41,7 @@ test.each(['Timeline', 'Plan', 'Profile', 'Add'])('%s tab opens its route and re
   if (name === 'Add') {
     expect(screen.getByRole('button', { name: 'Utang — Add a debt' })).toBeEnabled();
   }
+  if (name === 'Timeline') expect(screen.getByRole('button', { name: 'Set available money' })).toBeOnTheScreen();
   await user.press(screen.getByRole('tab', { name: 'Home' }));
   expect(screen.getByText('Magandang araw')).toBeVisible();
   expect(screen.getByRole('tab', { name: 'Home', selected: true })).toBeOnTheScreen();

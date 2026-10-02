@@ -14,7 +14,7 @@ export type AddStackParamList = {
 export type MainTabParamList = {
   Home: undefined;
   Timeline: undefined;
-  Add: undefined;
+  Add: NavigatorScreenParams<AddStackParamList> | undefined;
   Plan: undefined;
   Profile: undefined;
 };
