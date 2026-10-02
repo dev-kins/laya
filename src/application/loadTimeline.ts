@@ -1,27 +1,10 @@
 import type { FinancialDate } from '../domain/FinancialDate';
 import { generateFinancialEvents } from '../domain/generateFinancialEvents';
-import { calendarDate } from '../domain/modelValidation';
 import { projectCashFlow, type CashFlowPoint, type CashFlowProjection } from '../domain/projectCashFlow';
-import { createAvailableMoneyRepository, type AvailableMoneyRepository } from '../persistence/sqlite/availableMoneyRepository';
-import type { FinancialConnection } from '../persistence/sqlite/connection';
-import { openLayaDatabase } from '../persistence/sqlite/database';
-import { createDebtRepository, type DebtRepository } from '../persistence/sqlite/debtRepository';
-import { createDebtPaymentRepository, type DebtPaymentRepository } from '../persistence/sqlite/debtPaymentRepository';
-import { createEssentialObligationRepository, type EssentialObligationRepository } from '../persistence/sqlite/essentialObligationRepository';
-import { createIncomeRepository, type IncomeRepository } from '../persistence/sqlite/incomeRepository';
-import { deviceLocalFinancialDate, timelineThrough } from './timelineCalendar';
+import { withFinancialSnapshot, type FinancialRepositories, type FinancialSnapshotDependencies } from './withFinancialSnapshot';
 
-export interface TimelineRepositories {
-  availableMoney: Pick<AvailableMoneyRepository, 'get'>;
-  debts: Pick<DebtRepository, 'list'>;
-  incomes: Pick<IncomeRepository, 'list'>;
-  essentialObligations: Pick<EssentialObligationRepository, 'list'>;
-  debtPayments: Pick<DebtPaymentRepository, 'list'>;
-}
-interface TimelineDependencies {
-  today: () => FinancialDate;
-  open: () => Promise<FinancialConnection>;
-  repositories: (db: FinancialConnection) => TimelineRepositories;
+export type TimelineRepositories = FinancialRepositories;
+interface TimelineDependencies extends FinancialSnapshotDependencies {
   generate: typeof generateFinancialEvents;
   project: typeof projectCashFlow;
 }
@@ -37,36 +20,15 @@ export type TimelineResult =
   | Readonly<{ kind: 'missing-available-money'; startDate: FinancialDate; through: FinancialDate }>
   | Readonly<{ kind: 'ready'; projection: CashFlowProjection; groups: readonly TimelineGroup[] }>;
 
-const defaults: TimelineDependencies = {
-  today: deviceLocalFinancialDate, open: openLayaDatabase,
-  repositories: db => ({ availableMoney: createAvailableMoneyRepository(db), debts: createDebtRepository(db),
-    incomes: createIncomeRepository(db), essentialObligations: createEssentialObligationRepository(db),
-    debtPayments: createDebtPaymentRepository(db) }),
+const defaults = {
   generate: generateFinancialEvents, project: projectCashFlow,
 };
 
 /** One owned initialized connection, one read snapshot, success only after close. */
 export async function loadTimeline(overrides: Partial<TimelineDependencies> = {}): Promise<TimelineResult> {
   const deps = { ...defaults, ...overrides };
-  const startDate = calendarDate(deps.today());
-  const through = timelineThrough(startDate);
-  const db = await deps.open();
-  let transaction = false;
-  let result: TimelineResult;
-  try {
-    const repos = deps.repositories(db);
-    await db.execAsync('BEGIN DEFERRED');
-    transaction = true;
-    // Sequential reads keep failure/rollback from racing outstanding DB work.
-    const available = await repos.availableMoney.get();
-    const debts = await repos.debts.list();
-    const incomes = await repos.incomes.list();
-    const essentialObligations = await repos.essentialObligations.list();
-    const debtPayments = await repos.debtPayments.list();
-    await db.execAsync('COMMIT');
-    transaction = false;
-
-    if (available === null) result = Object.freeze({ kind: 'missing-available-money', startDate, through });
+  return withFinancialSnapshot<TimelineResult>(({ startDate, through, available, debts, incomes, essentialObligations, debtPayments }) => {
+    if (available === null) return Object.freeze({ kind: 'missing-available-money', startDate, through });
     else {
       const events = deps.generate({ from: startDate, through, debts, incomes, essentialObligations, debtPayments });
       const projection = deps.project({ startingBalance: available.amount, startDate, through, events });
@@ -90,21 +52,8 @@ export async function loadTimeline(overrides: Partial<TimelineDependencies> = {}
         }
         group.entries.push(Object.freeze({ ...point, sourceName, label }));
       }
-      result = Object.freeze({ kind: 'ready', projection,
+      return Object.freeze({ kind: 'ready', projection,
         groups: Object.freeze(groups.map(group => Object.freeze({ date: group.date, entries: Object.freeze(group.entries) }))) });
     }
-  } catch (error) {
-    let failure = error;
-    if (transaction) {
-      try { await db.execAsync('ROLLBACK'); } catch (rollbackError) {
-        failure = new AggregateError([failure, rollbackError], 'Timeline read and rollback failed.');
-      }
-    }
-    try { await db.closeAsync(); } catch (closeError) {
-      throw new AggregateError([failure, closeError], 'Timeline operation and close failed.');
-    }
-    throw failure;
-  }
-  await db.closeAsync();
-  return result;
+  }, overrides);
 }

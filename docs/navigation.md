@@ -12,7 +12,7 @@ behavior. React Navigation owns transient navigation state; it is not persisted.
 
 Home now displays the [real financial outlook and Safe-to-Pay](home.md).
 The unused synthetic VisualShowcase has been removed.
-Timeline now displays the [real financial projection](timeline.md); Plan and Profile remain route shells. Add contains a nested native
+Timeline now displays the [real financial projection](timeline.md), and Plan displays the [factual planning overview](plan.md). Profile remains a route shell. Add contains a nested native
 stack for AddHub, AddDebt, DebtOverview, AddIncome and IncomeOverview. AddHub and the saved-debt state offer
 View my debts. Success pops to an existing overview (or replaces the saved form
 with one). Done returns to the previous screen; back from an unsaved form discards

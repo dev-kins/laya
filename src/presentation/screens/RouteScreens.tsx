@@ -11,10 +11,6 @@ function Placeholder({ title, description }: { title: string; description: strin
   );
 }
 
-export function PlanScreen() {
-  return <Placeholder title="Plan" description="Your path forward will take shape here." />;
-}
-
 export function ProfileScreen() {
   return <Placeholder title="Profile" description="Your profile and preferences will have a home here." />;
 }

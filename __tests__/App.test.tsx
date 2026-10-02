@@ -7,6 +7,7 @@ import { FinancialDate } from '../src/domain/FinancialDate';
 
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
 jest.mock('../src/application/loadHome');
+jest.mock('../src/application/loadPlan');
 jest.mock('../src/application/onboarding', () => ({ onboardingService: { isComplete: jest.fn(), complete: jest.fn() } }));
 jest.mock('../src/application/loadTimeline', () => ({ loadTimeline: jest.fn() }));
 jest.mock('../src/application/availableMoney', () => ({ readAvailableMoney: jest.fn().mockResolvedValue(null) }));
@@ -51,6 +52,7 @@ test.each(['Timeline', 'Plan', 'Profile', 'Add'])('%s tab opens its route and re
     expect(screen.getByRole('button', { name: 'Utang — Add a debt' })).toBeEnabled();
   }
   if (name === 'Timeline') expect(screen.getByRole('button', { name: 'Set available money' })).toBeOnTheScreen();
+  if (name === 'Plan') expect(screen.getByText('No debts recorded yet.')).toBeOnTheScreen();
   await user.press(screen.getByRole('tab', { name: 'Home' }));
   expect(screen.getByText('Your financial outlook')).toBeVisible();
   expect(screen.getByRole('tab', { name: 'Home', selected: true })).toBeOnTheScreen();

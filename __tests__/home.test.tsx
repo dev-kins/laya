@@ -14,6 +14,7 @@ import { projectCashFlow } from '../src/domain/projectCashFlow';
 
 jest.mock('react-native-safe-area-context', () => require('react-native-safe-area-context/jest/mock').default);
 jest.mock('../src/application/loadHome');
+jest.mock('../src/application/loadPlan');
 jest.mock('../src/application/loadTimeline', () => ({ loadTimeline: jest.fn() }));
 jest.mock('../src/application/onboarding', () => ({ onboardingService: { isComplete: jest.fn(), complete: jest.fn() } }));
 jest.mock('../src/application/availableMoney', () => ({ readAvailableMoney: jest.fn(), saveAvailableMoney: jest.fn() }));

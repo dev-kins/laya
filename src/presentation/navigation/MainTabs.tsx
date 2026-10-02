@@ -5,7 +5,8 @@ import { StyleSheet, View, useWindowDimensions } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { HomeScreen } from '../screens/HomeScreen';
-import { PlanScreen, ProfileScreen } from '../screens/RouteScreens';
+import { PlanScreen } from '../screens/PlanScreen';
+import { ProfileScreen } from '../screens/RouteScreens';
 import { TimelineScreen } from '../screens/TimelineScreen';
 import { colors, layout, spacing, typography } from '../theme/tokens';
 import type { MainTabParamList } from './routes';
