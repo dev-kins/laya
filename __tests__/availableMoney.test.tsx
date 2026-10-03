@@ -64,7 +64,7 @@ test('busy save blocks another tap and success waits for the operation', async (
   await user.press(screen.getByRole('button', { name: 'Save available money' }));
   expect(screen.getByRole('button', { name: 'Saving available money…', busy: true })).toBeDisabled();
   expect(screen.getByLabelText('Available money (PHP)')).toBeDisabled();
-  expect(screen.getByRole('button', { name: 'Back to Add' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
   await user.press(screen.getByRole('button', { name: 'Saving available money…' }));
   expect(save).toHaveBeenCalledTimes(1);
   expect(save).toHaveBeenCalledWith('8200.50');
@@ -110,7 +110,7 @@ test('failed read hides input and missing state, and Retry loads without exposin
 test('late read from a previous editor cannot overwrite a new visit', async () => {
   const late = deferred<AvailableMoney | null>(); read.mockReturnValueOnce(late.promise);
   await open();
-  await fireEvent.press(screen.getByRole('button', { name: 'Back to Add' }));
+  await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
   read.mockResolvedValueOnce(parseAvailableMoney('6750.25'));
   await fireEvent.press(screen.getByRole('button', { name: 'Set available money' }));
   await act(async () => late.resolve(parseAvailableMoney('8200.50')));

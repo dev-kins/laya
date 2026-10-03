@@ -51,7 +51,8 @@ test('pending save disables actions, prevents double submission, then shows succ
   const user = userEvent.setup();
   await user.press(screen.getByRole('button', { name: 'Save debt' }));
   expect(screen.getByRole('button', { name: 'Saving debt…' })).toBeDisabled();
-  expect(screen.getByRole('button', { name: 'Back to Add' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Saving debt…', busy: true })).toBeOnTheScreen();
+  expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
   await user.press(screen.getByRole('button', { name: 'Saving debt…' }));
   expect(save).toHaveBeenCalledTimes(1);
   expect(screen.queryByText('Utang saved')).toBeNull();

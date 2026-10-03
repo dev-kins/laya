@@ -18,6 +18,9 @@ View my debts. Success pops to an existing overview (or replaces the saved form
 with one). Done returns to the previous screen; back from an unsaved form discards
 it, while removal is blocked during saving. The overview reads on focus and offers
 Add a debt. Screens call focused application operations; SQL remains in persistence.
+Debt, income and expense forms label that action “Back”: when entered from an
+overview it returns there, rather than promising a return to AddHub. Overview
+“Back to Add” actions still explicitly return to AddHub.
 See [Add Debt](add-debt.md) and [Utang Overview](debt-overview.md).
 Kita follows the same form/success/overview navigation and focus-refresh pattern;
 see [Kita / Income](income.md). AddExpense and ExpenseOverview now follow the same
@@ -27,7 +30,9 @@ and the saved-expense state through View my expenses.
 AvailableMoney is another route in the Add stack, reached through Set available
 money. Its editor loads once per mounted visit, supports Retry after a read
 failure, and preserves drafts across tab switches. Saving replaces the singleton;
-Done returns to AddHub. The hub shows no cached amount. See
+Done returns to the previous Add-stack screen, normally AddHub. Its “Back” label
+also stays accurate when a cross-tab shortcut opens it over an existing Add
+route. The hub shows no cached amount. See
 [Available money](available-money.md). Timeline's missing-money action opens this
 same editor through the typed nested Add route, retaining AddHub beneath it.
 Returning to Timeline refreshes its data on focus. Home's setup/update actions

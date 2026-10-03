@@ -70,7 +70,7 @@ export function AddExpenseScreen({ navigation }: NativeStackScreenProps<AddStack
             <Button label="View my expenses" onPress={() => navigation.popTo('ExpenseOverview')} />
             <Button label="Done" variant="secondary" onPress={() => navigation.goBack()} />
           </> : <>
-            <Button label="Back to Add" variant="secondary" disabled={saving} onPress={() => navigation.goBack()} />
+            <Button label="Back" variant="secondary" disabled={saving} onPress={() => navigation.goBack()} />
             <View style={styles.section}>
               <LayaText variant="caption" style={styles.warm}>GASTUSIN · A CLEARER PICTURE</LayaText>
               <LayaText variant="display" accessibilityRole="header">Magdagdag ng gastusin</LayaText>

@@ -109,6 +109,14 @@ test('error is neither empty nor raw SQL; Retry starts a new read with a loading
   expect(screen.getByText(original.name)).toBeOnTheScreen();
   expect(screen.queryByRole('alert')).toBeNull();
 });
+test('unsaved form Back returns to its income overview without claiming to return to Add', async () => {
+  await openOverview();
+  await fireEvent.press(screen.getByRole('button', { name: 'Add income' }));
+  expect(screen.queryByRole('button', { name: 'Back to Add' })).toBeNull();
+  await fireEvent.press(screen.getByRole('button', { name: 'Back' }));
+  expect(screen.getByRole('header', { name: 'Mga Kita' })).toBeOnTheScreen();
+});
+
 test('save from overview returns to the existing overview and refreshes new data', async () => {
   read.mockResolvedValueOnce([original]).mockResolvedValueOnce([original, next]);
   await openOverview();

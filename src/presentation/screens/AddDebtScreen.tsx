@@ -71,7 +71,7 @@ export function AddDebtScreen({ navigation }: NativeStackScreenProps<AddStackPar
             <Button label="View my debts" onPress={() => navigation.popTo('DebtOverview')} />
             <Button label="Done" variant="secondary" onPress={() => navigation.goBack()} />
           </> : <>
-            <Button label="Back to Add" variant="secondary" disabled={saving} onPress={() => navigation.goBack()} />
+            <Button label="Back" variant="secondary" disabled={saving} onPress={() => navigation.goBack()} />
             <View style={styles.section}>
               <LayaText variant="caption" style={styles.warm}>UTANG · A CLEARER PICTURE</LayaText>
               <LayaText variant="display" accessibilityRole="header">Add a debt</LayaText>
@@ -123,7 +123,7 @@ export function AddDebtScreen({ navigation }: NativeStackScreenProps<AddStackPar
                 <LayaText variant="caption" style={styles.warm}>Days 30 and 31 stay as entered. Shorter months are handled when a schedule is calculated.</LayaText>
               </> : null}
             </View>
-            <Button label={saving ? 'Saving debt…' : 'Save debt'} disabled={saving} onPress={submit} />
+            <Button label={saving ? 'Saving debt…' : 'Save debt'} disabled={saving} busy={saving} onPress={submit} />
             {saving ? <LayaText accessibilityLiveRegion="polite">Saving on this device…</LayaText> : null}
           </>}
         </View>

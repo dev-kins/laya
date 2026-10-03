@@ -81,7 +81,7 @@ export function AvailableMoneyScreen({ navigation }: NativeStackScreenProps<AddS
             </View>
             <Button label="Done" onPress={() => navigation.goBack()} />
           </> : <>
-            <Button label="Back to Add" variant="secondary" disabled={saving} onPress={() => navigation.goBack()} />
+            <Button label="Back" variant="secondary" disabled={saving} onPress={() => navigation.goBack()} />
             <View style={styles.section}>
               <View style={styles.rule} accessible={false} />
               <LayaText variant="display" style={styles.green} accessibilityRole="header">Available money</LayaText>

@@ -82,7 +82,7 @@ test('Available Money opens the existing Add editor and Profile remains reachabl
   expect(screen.getByRole('tab', { name: 'Add', selected: true })).toBeOnTheScreen();
   expect(readAvailableMoney).toHaveBeenCalledTimes(1);
   expect(screen.getByLabelText('Available money (PHP)')).toBeOnTheScreen();
-  await user.press(screen.getByRole('button', { name: 'Back to Add' }));
+  await user.press(screen.getByRole('button', { name: 'Back' }));
   await user.press(screen.getByRole('tab', { name: 'Profile' }));
   expect(screen.getByRole('header', { name: 'Your Laya' })).toBeOnTheScreen();
   expect(saveAvailableMoney).not.toHaveBeenCalled();

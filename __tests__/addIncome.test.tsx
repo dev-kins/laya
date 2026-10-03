@@ -53,7 +53,7 @@ test('pending save disables actions, prevents double submission, then shows succ
   const user = userEvent.setup();
   await user.press(screen.getByRole('button', { name: 'Save income' }));
   expect(screen.getByRole('button', { name: 'Saving income…', busy: true })).toBeDisabled();
-  expect(screen.getByRole('button', { name: 'Back to Add' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Back' })).toBeDisabled();
   await user.press(screen.getByRole('button', { name: 'Saving income…' }));
   expect(save).toHaveBeenCalledTimes(1);
   expect(screen.queryByText('Kita saved')).toBeNull();

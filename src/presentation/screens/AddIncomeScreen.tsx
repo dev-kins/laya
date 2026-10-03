@@ -73,7 +73,7 @@ export function AddIncomeScreen({ navigation }: NativeStackScreenProps<AddStackP
             <Button label="View my income" onPress={() => navigation.popTo('IncomeOverview')} />
             <Button label="Done" variant="secondary" onPress={() => navigation.goBack()} />
           </> : <>
-            <Button label="Back to Add" variant="secondary" disabled={saving} onPress={() => navigation.goBack()} />
+            <Button label="Back" variant="secondary" disabled={saving} onPress={() => navigation.goBack()} />
             <View style={styles.section}>
               <LayaText variant="caption" style={styles.warm}>KITA · A CLEARER PICTURE</LayaText>
               <LayaText variant="display" accessibilityRole="header">Magdagdag ng kita</LayaText>
